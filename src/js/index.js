@@ -1,6 +1,6 @@
 'use strict';
 
-let scene, sceneLight, cam, renderer, clock;
+let scene, sceneLight, cam, renderer, clock, portalParticles = [];
 
 function initScene() {
   scene = new THREE.Scene();
@@ -25,7 +25,7 @@ function initScene() {
 function particleSetup() {
   let loader = new THREE.TextureLoader();
 
-  loader.load('../resource/smoke.png', function (texture) {
+  loader.load('smoke.png', function (texture) {
     let portalGeo = new THREE.PlaneBufferGeometry(350, 350);
     let portalMaterial = new THREE.MeshStandardMaterial({
       map: texture,
@@ -40,18 +40,23 @@ function particleSetup() {
         0.1 * p
       );
       particle.rotation.z = Math.random() * 360;
+      portalParticles.push(particle);
       scene.add(particle);
     }
 
     clock = new THREE.Clock();
     animate();
-
-    // renderer.render(scene, cam);
   });
 }
 
 function animate() {
-  
+  let delta = clock.getDelta();
+  portalParticles.forEach(p => {
+    p.rotation.z -= delta * 1.5;
+  });
+
+  renderer.render(scene, cam);
+  requestAnimationFrame(animate);
 }
 
 initScene();
