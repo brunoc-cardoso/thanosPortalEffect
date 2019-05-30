@@ -5,8 +5,8 @@ let scene, sceneLight, portalLight, cam, renderer, clock, portalParticles = [], 
 function initScene() {
   scene = new THREE.Scene();
 
-  sceneLight = new THREE.DirectionalLight(0xffffff,0.5);
-  sceneLight.position.set(0,0,1);
+  sceneLight = new THREE.DirectionalLight(0xffffff, 0.5);
+  sceneLight.position.set(0, 0, 1);
   scene.add(sceneLight);
 
   portalLight = new THREE.PointLight(0x062d89, 30, 650, 1.7);
@@ -35,6 +35,12 @@ function particleSetup() {
       transparent: true
     });
 
+    let smokeGeo = new THREE.PlaneBufferGeometry(1000, 1000);
+    let smokeMaterial = new THREE.MeshStandardMaterial({
+      map: texture,
+      transparent: true
+    });
+
     for (let p = 880; p > 250; p--) {
       let particle = new THREE.Mesh(portalGeo, portalMaterial);
       particle.position.set(
@@ -43,6 +49,19 @@ function particleSetup() {
         0.1 * p
       );
       particle.rotation.z = Math.random() * 360;
+      portalParticles.push(particle);
+      scene.add(particle);
+    }
+
+    for (let p = 0; p < 40; p++) {
+      let particle = new THREE.Mesh(smokeGeo, smokeMaterial);
+      particle.position.set(
+        Math.random() * 1000 - 500,
+        Math.random() * 400 - 200,
+        25
+      );
+      particle.rotation.z = Math.random() * 360;
+      particle.material.opacity = 0.6;
       portalParticles.push(particle);
       scene.add(particle);
     }
@@ -56,6 +75,10 @@ function animate() {
   let delta = clock.getDelta();
   portalParticles.forEach(p => {
     p.rotation.z -= delta * 1.5;
+  });
+
+  smokeParticles.forEach(p => {
+    p.rotation.z -= delta * 0.2;
   });
 
   if (Math.random() > 0.9) {
