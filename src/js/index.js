@@ -1,6 +1,6 @@
 'use strict';
 
-let scene, sceneLight, cam, renderer, clock, portalParticles = [];
+let scene, sceneLight, portalLight, cam, renderer, clock, portalParticles = [], smokeParticles = [];
 
 function initScene() {
   scene = new THREE.Scene();
@@ -8,6 +8,10 @@ function initScene() {
   sceneLight = new THREE.DirectionalLight(0xffffff,0.5);
   sceneLight.position.set(0,0,1);
   scene.add(sceneLight);
+
+  portalLight = new THREE.PointLight(0x062d89, 30, 650, 1.7);
+  portalLight.position.set(0, 0, 250);
+  scene.add(portalLight);
 
   cam = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 1, 10000);
   cam.position.z = 1000;
@@ -18,7 +22,6 @@ function initScene() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
-  renderer.render(scene, cam);
   particleSetup();
 }
 
@@ -55,6 +58,11 @@ function animate() {
     p.rotation.z -= delta * 1.5;
   });
 
+  if (Math.random() > 0.9) {
+    portalLight.power = 350 + Math.random() * 500;
+  }
+
+  renderer.clear();
   renderer.render(scene, cam);
   requestAnimationFrame(animate);
 }
